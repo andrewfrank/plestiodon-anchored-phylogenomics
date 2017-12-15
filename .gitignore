@@ -1,0 +1,9 @@
+data/
+supplementary_data/
+src_misc/
+lab/
+
+analyses/ExtractMitoGenome
+analyses/NetworkAnalyses
+analyses/PhylogeneticAnalyses
+analyses/PreliminaryAnalyses
