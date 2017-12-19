@@ -2,6 +2,7 @@ data/
 supplementary_data/
 src_misc/
 lab/
+presentations/
 
 analyses/ExtractMitoGenome
 analyses/NetworkAnalyses
