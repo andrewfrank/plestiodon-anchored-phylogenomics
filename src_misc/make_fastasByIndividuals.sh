@@ -36,3 +36,5 @@ for SAMPLE in "${SAMPLES[@]}"; do
     sed '/^--$/d' > "$SAMPLE"_"$ALLELE".fasta
   done
 done
+
+rm concat.fasta
