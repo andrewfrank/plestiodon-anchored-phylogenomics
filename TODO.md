@@ -1,10 +1,10 @@
 # build script to take Alan’s alignments and transform them into vcf files
 
-this only detects SNPs from multiple sequence alignments in fasta format (I need indels as well) https://github.com/sanger-pathogens/snp-sites
+complete make_fastaByIndividuals.sh to split fastas into allele specific fasta files per individual
 
-then use vcftools vcf-merge: http://vcftools.sourceforge.net/perl_module.html#vcf-merge
+finish pseudocoding phasedalign-to-vcf.py
 
-think about options to take multiple singletons resulting from INDELS (i.e. A,A and C,- and G,-) and merging them together into a single INDEL (A,ACG)
+write phasedalign-to-vcf.py
 
 # compare my phased variants to Alan’s phase variants
 
