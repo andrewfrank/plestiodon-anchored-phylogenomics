@@ -1,9 +1,5 @@
 # build script to take Alan’s alignments and transform them into vcf files
 
-complete make_fastaByIndividuals.sh to split fastas into allele specific fasta files per individual
-
-finish pseudocoding phasedalign-to-vcf.py
-
 write phasedalign-to-vcf.py
 
 # compare my phased variants to Alan’s phase variants
