@@ -17,6 +17,11 @@ I18068
 I18069
 )
 
+ALLELES=(
+seq1
+seq2
+)
+
 INPUT_DIR="/Users/Andrew/Drive/Work/Projects/plestiodon-anchored-phylogenomics/data/original_seqs"
 OUTPUT_DIR="/Users/Andrew/Drive/Work/Projects/plestiodon-anchored-phylogenomics/data/original_seqs_byIndividual"
 
@@ -24,6 +29,10 @@ cd $INPUT_DIR
 awk '/>/{sub(">","&"FILENAME"_");sub(/\.fasta/,x)}1' *.fasta > $OUTPUT_DIR/concat.fasta
 
 cd $OUTPUT_DIR
-for PATTERN in "${SAMPLES[@]}"; do
-  grep -A 1 $PATTERN concat.fasta | sed '/^--$/d' > $PATTERN.fasta
+for SAMPLE in "${SAMPLES[@]}"; do
+  for ALLELE in "${ALLELES[@]}"; do
+    grep -A 1 $SAMPLE concat.fasta |
+    grep -A 1 $ALLELE |
+    sed '/^--$/d' > "$SAMPLE"_"$ALLELE".fasta
+  done
 done
