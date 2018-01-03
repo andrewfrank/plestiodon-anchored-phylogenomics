@@ -1,6 +1,6 @@
 # build script to take Alan’s alignments and transform them into vcf files
 
-write phasedalign-to-vcf.py
+run phasedalign-to-vcf.py per individual
 
 # compare my phased variants to Alan’s phase variants
 
