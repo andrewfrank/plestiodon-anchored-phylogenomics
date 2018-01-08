@@ -2,21 +2,20 @@
 
 from Bio import SeqIO
 import os
+import sys
 
-working_dir = "/Users/Andrew/Drive/Work/Projects/plestiodon-anchored-phylogenomics/data"
-
-sample = "I7487"
-
-ref_file = os.path.join(working_dir,"consensus_seqs","ConsensusSeqs_noAmbi.fasta")
-al1_file = os.path.join(working_dir,"original_seqs_byIndividual",sample + "_seq1.fasta")
-al2_file = os.path.join(working_dir,"original_seqs_byIndividual",sample + "_seq2.fasta")
-out_file = os.path.join(working_dir,"original_vcfs",sample + "_original.vcf")
+sample =    sys.argv[1]
+ref_file =  sys.argv[2]
+al1_file =  sys.argv[3]
+al2_file =  sys.argv[4]
+out_file =  sys.argv[5]
 
 refs = list(SeqIO.parse(ref_file, "fasta"))
 al1s = list(SeqIO.parse(al1_file, "fasta"))
 al2s = list(SeqIO.parse(al2_file, "fasta"))
 
-lines = ["#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sample + "\n"]
+header = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sample + "\n"
+lines = [header]
 
 for ref, al1, al2 in zip(refs, al1s, al2s):
 
