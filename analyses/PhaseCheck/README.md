@@ -79,7 +79,7 @@ sed \
   -e s/H/A/g \
   -e s/D/A/g \
   -e s/B/C/g \
-  ConsensusSeqs_Raw.fasta > ConsensusSeqs.fasta
+  concat-consensus_seqs.fasta > concat-consensus_seqs_noAmbi.fasta
 ```
 
 I then used BWA-MEM to construct an index:
@@ -95,10 +95,10 @@ These bwa index files were also saved in /data/bwa-index
 
 From https://software.broadinstitute.org/gatk/documentation/article?id=1601
 ```
-~/develop/jdk1.8.0_91/jre/bin/java -jar ~/develop/picard/picard.jar \
+java -jar $PICARD \
   CreateSequenceDictionary \
-  R=ConsensusSeqs.fasta \
-  O=ConsensusSeqs.dict
+  R=../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  O=../consensus_seqs/concat-consensus_seqs_noAmbi.dict
 ```
 
 ### Create fasta index with samtools
@@ -131,6 +131,48 @@ I then manually constructed a BED file which indicates areas of non-excessive co
 
 ***Note***: I attempted to *a priori* assess areas of excess coverage with the script calc_excessiveCoverage.R, saved in /src_unused. The script attempts to detect when, in a given vector of per-base coverage differences across a locus, the greatest changes in coverage occur. However, I had substantial difficulty creating a cutoff for degree in coverage change that accurately reflected what I observed in the coverage plots and the pileups visualized in Geneious.
 
+## Checking called variants against Alan's called variants
+
+```
+module load gatk
+
+java -jar $GATK \
+  -T ValidateVariants \
+  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  -V I7487_lemmons.vcf
+
+java -jar $GATK \
+  -T LeftAlignAndTrimVariants \
+  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  --variant I7487_lemmons.vcf \
+  -o test.vcf
+
+```
+
+```
+vcf-merge I7487_lemmons.vcf.gz I7488_lemmons.vcf.gz I7489_lemmons.vcf.gz I7490_lemmons.vcf.gz I7491_lemmons.vcf.gz I7492_lemmons.vcf.gz I7493_lemmons.vcf.gz I7495_lemmons.vcf.gz I7496_lemmons.vcf.gz I7497_lemmons.vcf.gz I7498_lemmons.vcf.gz I18066_lemmons.vcf.gz I18068_lemmons.vcf.gz I18069_lemmons.vcf.gz -c any -t
+
+java -jar $GATK \
+  -T CombineVariants \
+  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  --variant I7487_lemmons.vcf \
+  --variant I7488_lemmons.vcf \
+  --variant I7489_lemmons.vcf \
+  --variant I7490_lemmons.vcf \
+  --variant I7491_lemmons.vcf \
+  --variant I7492_lemmons.vcf \
+  --variant I7493_lemmons.vcf \
+  --variant I7495_lemmons.vcf \
+  --variant I7496_lemmons.vcf \
+  --variant I7497_lemmons.vcf \
+  --variant I7498_lemmons.vcf \
+  --variant I18066_lemmons.vcf \
+  --variant I18068_lemmons.vcf \
+  --variant I18069_lemmons.vcf \
+  -genotypeMergeOptions UNIQUIFY \
+  -o
+  
+```
 ## Filtering reads
 
 I wanted to apply 2 filter to the bwa-mem mapped reads:
@@ -147,7 +189,7 @@ https://software.broadinstitute.org/gatk/documentation/article?id=1247
 
 ## Call variants per-individuals with GATK's HaplotypeCaller
 
-Because 
+Because
 
 ## Call variants / phase across individuals, and filter SNPs & INDELs
 
