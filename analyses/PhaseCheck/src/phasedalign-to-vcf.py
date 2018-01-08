@@ -14,7 +14,10 @@ refs = list(SeqIO.parse(ref_file, "fasta"))
 al1s = list(SeqIO.parse(al1_file, "fasta"))
 al2s = list(SeqIO.parse(al2_file, "fasta"))
 
-header = "##fileformat=VCFv4.2" + "\n"
+header = ("##fileformat=VCFv4.2" + "\n"
+            + "##ALT=<ID=NON_REF,Description=\"Represents any possible alternative allele at this location\">" + "\n"
+            + "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" + "\n"
+            + "##FORMAT=<ID=PGT,Number=1,Type=String,Description=\"Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another\">" + "\n")
 colnames = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sample + "\n"
 lines = [header,colnames]
 
@@ -29,7 +32,7 @@ for ref, al1, al2 in zip(refs, al1s, al2s):
         qual = "."
         vcf_filter = "."
         info = "."
-        vcf_format = "GT,PGT"
+        vcf_format = "GT:PGT"
 
         if ref_base == al1_base and ref_base == al2_base:
             alt = ref_base
