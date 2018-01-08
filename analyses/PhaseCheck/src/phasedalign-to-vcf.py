@@ -14,8 +14,9 @@ refs = list(SeqIO.parse(ref_file, "fasta"))
 al1s = list(SeqIO.parse(al1_file, "fasta"))
 al2s = list(SeqIO.parse(al2_file, "fasta"))
 
-header = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sample + "\n"
-lines = [header]
+header = "##fileformat=VCFv4.2" + "\n"
+colnames = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sample + "\n"
+lines = [header,colnames]
 
 for ref, al1, al2 in zip(refs, al1s, al2s):
 
