@@ -97,8 +97,8 @@ From https://software.broadinstitute.org/gatk/documentation/article?id=1601
 ```
 java -jar $PICARD \
   CreateSequenceDictionary \
-  R=../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
-  O=../consensus_seqs/concat-consensus_seqs_noAmbi.dict
+  R=./data/bwa-index/ConsensusSeqs.fasta \
+  O=./data/bwa-index/ConsensusSeqs.dict
 ```
 
 ### Create fasta index with samtools
@@ -134,44 +134,56 @@ I then manually constructed a BED file which indicates areas of non-excessive co
 ## Checking called variants against Alan's called variants
 
 ```
-module load gatk
-
-java -jar $GATK \
-  -T ValidateVariants \
-  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
-  -V I7487_lemmons.vcf
-
-java -jar $GATK \
-  -T LeftAlignAndTrimVariants \
-  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
-  --variant I7487_lemmons.vcf \
-  -o test.vcf
-
-```
-
-```
-vcf-merge I7487_lemmons.vcf.gz I7488_lemmons.vcf.gz I7489_lemmons.vcf.gz I7490_lemmons.vcf.gz I7491_lemmons.vcf.gz I7492_lemmons.vcf.gz I7493_lemmons.vcf.gz I7495_lemmons.vcf.gz I7496_lemmons.vcf.gz I7497_lemmons.vcf.gz I7498_lemmons.vcf.gz I18066_lemmons.vcf.gz I18068_lemmons.vcf.gz I18069_lemmons.vcf.gz -c any -t
+module load GATK
 
 java -jar $GATK \
   -T CombineVariants \
   -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
-  --variant I7487_lemmons.vcf \
-  --variant I7488_lemmons.vcf \
-  --variant I7489_lemmons.vcf \
-  --variant I7490_lemmons.vcf \
-  --variant I7491_lemmons.vcf \
-  --variant I7492_lemmons.vcf \
-  --variant I7493_lemmons.vcf \
-  --variant I7495_lemmons.vcf \
-  --variant I7496_lemmons.vcf \
-  --variant I7497_lemmons.vcf \
-  --variant I7498_lemmons.vcf \
-  --variant I18066_lemmons.vcf \
-  --variant I18068_lemmons.vcf \
-  --variant I18069_lemmons.vcf \
+  --variant:I7487 I7487_lemmons.vcf \
+  --variant:I7488 I7488_lemmons.vcf \
+  --variant:I7489 I7489_lemmons.vcf \
+  --variant:I7490 I7490_lemmons.vcf \
+  --variant:I7491 I7491_lemmons.vcf \
+  --variant:I7492 I7492_lemmons.vcf \
+  --variant:I7493 I7493_lemmons.vcf \
+  --variant:I7495 I7495_lemmons.vcf \
+  --variant:I7496 I7496_lemmons.vcf \
+  --variant:I7497 I7497_lemmons.vcf \
+  --variant:I7498 I7498_lemmons.vcf \
+  --variant:I18066 I18066_lemmons.vcf \
+  --variant:I18068 I18068_lemmons.vcf \
+  --variant:I18069 I18069_lemmons.vcf \
   -genotypeMergeOptions UNIQUIFY \
-  -o
-  
+  -o VariantCalls_lemmons.vcf
+
+java -jar $GATK \
+  -T SelectVariants \
+  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  -V VariantCalls_frank.vcf.gz \
+  --discordance VariantCalls_lemmons.vcf.gz \
+  -o VariantCalls_presentFrank-absentLemmons.vcf
+
+java -jar $GATK \
+  -T SelectVariants \
+  -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+  -V VariantCalls_lemmons.vcf.gz \
+  --discordance VariantCalls_frank.vcf.gz \
+  -o VariantCalls_absentFrank-presentLemmons.vcf
+
+java -jar $GATK \
+   -T HaplotypeResolver \
+   -R ../consensus_seqs/concat-consensus_seqs_noAmbi.fasta \
+   -V:HC VariantCalls_frank.vcf.gz \
+   -V:Lemmons VariantCalls_lemmons.vcf.gz \
+   -o resolved-HC.vcf
+
+module load vcftools
+
+vcf-compare \
+  VariantCalls_frank-UGT.vcf.gz \
+  VariantCalls_lemmons.vcf.gz \
+  -g > frank_UGT-lemmon-compared.txt
+
 ```
 ## Filtering reads
 
