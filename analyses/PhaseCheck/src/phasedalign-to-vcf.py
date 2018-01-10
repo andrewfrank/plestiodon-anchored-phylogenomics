@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from Bio import SeqIO
+from Bio import Seq
 import os
 import sys
 
@@ -9,6 +10,10 @@ ref_file =  sys.argv[2]
 al1_file =  sys.argv[3]
 al2_file =  sys.argv[4]
 out_file =  sys.argv[5]
+
+base_dict = Seq.IUPAC.IUPACData.ambiguous_dna_values
+std_bases = ["A","C","G","T"]
+amb_bases = ["N","M","X","W","R","B","D","V","K","Y","S","H"]
 
 refs = list(SeqIO.parse(ref_file, "fasta"))
 al1s = list(SeqIO.parse(al1_file, "fasta"))
@@ -32,23 +37,47 @@ for ref, al1, al2 in zip(refs, al1s, al2s):
         qual = "."
         vcf_filter = "."
         info = "."
-        vcf_format = "GT:PGT"
 
-        if ref_base == al1_base and ref_base == al2_base:
-            alt = ref_base
-            ind = "0/0:0|0"
-        if ref_base == al1_base and ref_base != al2_base:
-            alt = al2_base
-            ind = "0/1:0|1"
-        if ref_base != al1_base and ref_base == al2_base:
-            alt = al1_base
-            ind = "0/1:1|0"
-        if ref_base != al1_base and ref_base != al2_base and al1_base == al2_base:
-            alt = al1_base
-            ind = "1/1:1|1"
-        if ref_base != al1_base and ref_base != al2_base and al1_base != al2_base:
-            alt = al1_base + "," + al2_base
-            ind = "1/2:1|2"
+        if al1_base and al2_base not in amb_bases:
+            vcf_format = "GT:PGT"
+            if ref_base == al1_base and ref_base == al2_base:
+                alt = ref_base
+                ind = "0/0:0|0"
+            if ref_base == al1_base and ref_base != al2_base:
+                alt = al2_base
+                ind = "0/1:0|1"
+            if ref_base != al1_base and ref_base == al2_base:
+                alt = al1_base
+                ind = "0/1:1|0"
+            if ref_base != al1_base and ref_base != al2_base and al1_base == al2_base:
+                alt = al1_base
+                ind = "1/1:1|1"
+            if ref_base != al1_base and ref_base != al2_base and al1_base != al2_base:
+                alt = al1_base + "," + al2_base
+                ind = "1/2:1|2"
+
+        if (al1_base in amb_bases) or (al2_base in amb_bases):
+            vcf_format = "GT"
+            dam_bases = base_dict.get(al1_base) + base_dict.get(al2_base)
+            alt_bases = list(set(dam_bases))
+            if len(alt_bases) == 2 and (ref_base in alt_bases):
+                alt_bases.remove(ref_base)
+                alt = ",".join(alt_bases)
+                ind = "0/1"
+            if len(alt_bases) == 2 and (ref_base not in alt_bases):
+                alt = ",".join(alt_bases)
+                ind = "1/2"
+            if len(alt_bases) == 3 and (ref_base in alt_bases):
+                alt_bases.remove(ref_base)
+                alt = ",".join(alt_bases)
+                ind = "0/1/2"
+            if len(alt_bases) == 3 and (ref_base not in alt_bases):
+                alt = ",".join(alt_bases)
+                ind = "1/2/3"
+            if len(alt_bases) == 4:
+                alt_bases.remove(ref_base)
+                alt = ",".join(alt_bases)
+                ind = "0/1/2/3"
 
         line = chrom + "\t" + str(pos) + "\t" + vcf_id + "\t" + vcf_ref + "\t" + alt + "\t" + qual + "\t" + vcf_filter + "\t" + info + "\t" + vcf_format + "\t" + ind + "\n"
         lines.append(line)
