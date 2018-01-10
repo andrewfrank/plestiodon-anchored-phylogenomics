@@ -12,7 +12,7 @@ al2_file =  sys.argv[4]
 out_file =  sys.argv[5]
 
 base_dict = Seq.IUPAC.IUPACData.ambiguous_dna_values
-std_bases = ["A","C","G","T"]
+base_dict["-"] = "-" # add - key to handle gaps paired with ambiguous bases
 amb_bases = ["N","M","X","W","R","B","D","V","K","Y","S","H"]
 
 refs = list(SeqIO.parse(ref_file, "fasta"))
