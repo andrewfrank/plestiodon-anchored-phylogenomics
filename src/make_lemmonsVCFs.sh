@@ -20,17 +20,7 @@ for SAMPLE in "${SAMPLES[@]}"; do
   python $SCRIPT_PATH $SAMPLE $REF $AL1 $AL2 $OUT
 
   fgrep -v -e "0/0" "$OUTPUT_DIR"/"$SAMPLE"_lemmons-tmp.vcf |
-  sed -e '6,$s/M/<M>/' \
-      -e '6,$s/R/<R>/' \
-      -e '6,$s/W/<W>/' \
-      -e '6,$s/S/<S>/' \
-      -e '6,$s/Y/<Y>/' \
-      -e '6,$s/K/<K>/' \
-      -e '6,$s/V/<V>/' \
-      -e '6,$s/H/<H>/' \
-      -e '6,$s/D/<D>/' \
-      -e '6,$s/B/<B>/' |
   sed -e '6,$s/n/-/3' |
-  fgrep -v -e "-" -e "$(printf '\t')N$(printf '\t')" > "$OUTPUT_DIR"/"$SAMPLE"_lemmons.vcf
+  fgrep -v -e "-" -e "0/1/2/3" > "$OUTPUT_DIR"/"$SAMPLE"_lemmons.vcf
   rm $OUT
 done
